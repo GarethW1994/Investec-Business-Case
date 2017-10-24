@@ -1,0 +1,23 @@
+<div id="table-data" *ngIf="entitiesData !== undefined">
+        <table class="table table-striped table-hover ">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Entity Id</th>
+                    <th>Entity Name</th>
+                  </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let entity of entitiesData">
+                        <td>{{ entity.id }}</td>
+                        <td>{{ entity.entityId }}</td>
+                        <td>{{ entity.entityName }}</td>
+                    </tr>
+            </tbody>
+        </table>
+</div>
+
+<div *ngIf="entitiesData === undefined">
+    <div id="loading"></div>
+    <h6 id="loading-text">Retrieving Data...</h6>
+</div>

@@ -1,0 +1,42 @@
+/* You can add global styles to this file, and also import other style files */
+#table-data {
+    width: 95%;
+    height: 75%;
+    margin: 20px;
+}
+
+#loading-text {
+    width: 100px;
+    height: 100px;
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    margin: auto;
+}
+
+#loading {
+    width: 50px;
+    height: 50px;
+    border: 5px solid #ccc;
+    border-top-color: #e73407;
+    border-radius: 100%;
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    margin: auto;
+
+    animation-name: circle;
+    animation-duration: 1s;
+    animation-duration: linear;
+    animation-iteration-count: infinite;
+}
+
+@keyframes circle {
+    0% {transform: rotate(0deg)};
+    50% {transform: rotate(180deg)}
+    100% {transform: rotate(360deg)}
+}

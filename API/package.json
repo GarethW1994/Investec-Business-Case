@@ -1,0 +1,25 @@
+{
+  "name": "investect-bc",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./dist/index.js",
+  "scripts": {
+    "start": "node && nodemon ./dist/index.js",
+    "server": "node && nodemon ./dist/index.js",
+    "test": "mocha"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/node": "^8.0.32",
+    "@types/typescript": "^2.0.0",
+    "body-parser": "^1.18.2",
+    "csvtojson": "^1.1.8",
+    "express": "^4.16.1",
+    "express-session": "^1.15.6",
+    "morgan": "^1.9.0",
+    "reflect-metadata": "^0.1.10",
+    "typeorm": "0.1.0-alpha.50",
+    "typescript": "^2.5.3"
+  }
+}
