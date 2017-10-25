@@ -97,7 +97,7 @@ RelationshipsEntityConverter = () => {
      });
  }
 
- ParentEntityConverter = () => {
+ ParentEntityConverter = (connection) => {
    let file = "/home/bootcamp/projects/Investect-BC/investec-app/API/csv/entities.csv";
    const converter = new Converter();
 
@@ -119,7 +119,11 @@ RelationshipsEntityConverter = () => {
 
       ParentEntityRelationship.entityId = rawData[0]["Parent Entity Id"];
       ParentEntityRelationship.entityName = rawData[0]["Parent Entity Name"];
-        manager.save(ParentEntityRelationship)
+
+      ParentEntityRelationship.entityId = rawData[1]["Parent Entity Id"];
+      ParentEntityRelationship.entityName = rawData[1]["Parent Entity Name"];
+
+      manager.save(ParentEntityRelationship)
         .catch((error) => {
             console.log("duplicate catched");
         // });
@@ -131,20 +135,33 @@ RelationshipsEntityConverter = () => {
    let file = "/home/bootcamp/projects/Investect-BC/investec-app/API/csv/entities.csv";
 
    const converter = new Converter();
-   const parentRepo = getRepository(ParentEntity);
    const childRepo = getRepository(ChildEntity);
 
    converter.fromFile(file, async (err, rawData) => {
-      
-      const parent = new ParentEntity();
 
-      const child1 = new ChildEntity();
+      let child = new ChildEntity();
 
-      child1.entityId = 168593;
-      child1.entityName = "AAA BANK CHILD";
-      child1.parent = parent;
+      child.entityId = rawData[0]["Entity Id"];
+      child.entityName = rawData[0]["Entity Name"];
 
-      await connection.manager.save(parent , child1);
+
+      let parent = new ParentEntity();
+      parent.entityId = rawData[0]["Parent Entity Id"];
+      parent.entityName = rawData[0]["Parent Entity Name"];
+      parent.children = [child];
+
+      childRepo
+      .save(child)
+      .then(child => console.log("Child Has Been Saved"))
+      .catch(error => console.log("Cannot save. Error: ", error));
+
+      const parentRepo = getRepository(ParentEntity);
+            parentRepo
+            .save(parent)
+            .then(parent => console.log("Parent Has Been Saved"))
+            .catch(error => console.log("Cannot save. Error: ", error));
+
   });
  }
+
 }

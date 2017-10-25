@@ -8,12 +8,14 @@ export class ParentEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column({unique: true})
+    @Column({unique: true, default: 0})
     entityId: number;
 
-    @Column("text")
+    @Column({type: "varchar"})
     entityName: string;
 
-    @OneToMany(type => ChildEntity, child_entity => child_entity.parent)
+    @OneToMany(type => ChildEntity, child_entity => child_entity.parent, {
+      cascadeUpdate: true
+    })
     children: ChildEntity[];
 }

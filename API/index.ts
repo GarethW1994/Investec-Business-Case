@@ -49,9 +49,10 @@ server.app.get("/importCSV", async (req: Request, res: Response, next: NextFunct
     //addingData.LimitsConverter();
     //addingData.RelationshipsEntityConverter();
     // addingData.EntitiesConverter();
-    // addingData.ParentEntityConverter();
-    addingData.ChildEntityConverter(connection);
-  
+    // await addingData.ParentEntityConverter(connection);
+    
+   addingData.ChildEntityConverter(connection);
+
 
      res.send("Success");
 });
