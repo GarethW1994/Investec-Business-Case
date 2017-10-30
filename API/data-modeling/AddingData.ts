@@ -124,18 +124,25 @@ export class AddingData {
 
         if (result !== false) {
           try {
-            let _entity = await _entityRelationship.find({ entityId: data["Parent Entity Id"] })
-
             let parent = new ParentEntity();
 
             parent.parentId = data["Parent Entity Id"];
             parent.parentName = data["Parent Entity Name"];
-            // parent.entity = _entity;
+
 
           await parentRepository
             .save(parent)
             .then(parent => console.log("Parent has been saved"))
             .catch(error => console.log("Duplicate Error Caught"));
+
+            let _entity = new _Entity();
+
+            _entity.parent = [ parent ];
+
+            await _entityRelationship
+            .save(_entity)
+            .then(_entity => console.log("_Entity has been saved"))
+            .catch(error => console.log("Cannot save. Error", error));
           }
           catch(e) {
             console.log('duplicate error caught')
