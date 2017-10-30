@@ -30,7 +30,7 @@ export class EntitiesService {
     }
 
     getParentEntities() {
-        console.log(this.parent);
+        return this.parent;
     }
 
 

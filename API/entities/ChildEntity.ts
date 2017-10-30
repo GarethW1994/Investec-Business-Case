@@ -7,16 +7,16 @@ export class ChildEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column({unique: true, default: 0})
+    @Column({default: 0})
     entityId: number;
 
     @Column({type: "varchar", default: "text"})
     entityName: string;
 
-    @ManyToOne(type => ParentEntity, parent_entity => parent_entity.children, {
-      cascadeInsert: true,
-      cascadeUpdate: true,
-      cascadeRemove: true
-    })
-    parent: ParentEntity;
+    // @ManyToOne(type => ParentEntity, parent_entity => parent_entity.children, {
+    //   cascadeInsert: true,
+    //   cascadeUpdate: true,
+    //   cascadeRemove: true
+    // })
+    // parent: ParentEntity;
 }

@@ -45,13 +45,13 @@ server.app.get("/RelationshipModeling", TableModeling.PopulateParentEntity);
 server.app.get("/importCSV", async (req: Request, res: Response, next: NextFunction) => {
   let addingData = new AddingData();
 
-  let connection = server.connectDatabase;
-    //addingData.LimitsConverter();
-    //addingData.RelationshipsEntityConverter();
+  //   let connection = server.connectDatabase;
+    // addingData.LimitsConverter();
+    // addingData.RelationshipsEntityConverter();
     // addingData.EntitiesConverter();
-    // await addingData.ParentEntityConverter(connection);
-    
-   addingData.ChildEntityConverter(connection);
+    addingData.ParentEntityConverter();
+
+  //  addingData.ChildEntityConverter(connection);
 
 
      res.send("Success");

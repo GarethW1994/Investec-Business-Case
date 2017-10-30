@@ -46,11 +46,11 @@ export class Routes {
     }
 
     async getParentEntity(req: Request, res: Response, next: NextFunction) {
-      const parentRepo = getRepository(ParentEntity);
+      const parentRepo = getRepository(_Entity);
 
       const parent = await parentRepo
-      .createQueryBuilder("parent_entity")
-      .leftJoinAndSelect("parent_entity.children", "child_entity")
+      .createQueryBuilder("_entity")
+      .leftJoinAndSelect("_entity.parent", "parent_entity")
       .getMany();
 
       res.json({

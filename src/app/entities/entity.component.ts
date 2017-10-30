@@ -7,6 +7,8 @@ import { EntitiesService } from './entities.services';
 })
 export class EntityComponent implements OnInit {
     entitiesData;
+    parentEntity;
+    children;
     entity = [];
 
     constructor(private entities: EntitiesService) {
@@ -17,6 +19,9 @@ export class EntityComponent implements OnInit {
 
     ngOnInit() {
         this.entitiesData = this.entities.getEntities();
-        this.entities.getParentEntities();
+        this.parentEntity = this.entities.getParentEntities();
+        this.children = this.parentEntity[0].children;
+
+        console.log(this.children)
     }
 }

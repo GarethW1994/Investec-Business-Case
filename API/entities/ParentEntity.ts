@@ -1,21 +1,21 @@
 import 'reflect-metadata';
-import { Entity, Column, PrimaryColumn, PrimaryGeneratedColumn, OneToMany, JoinColumn } from 'typeorm';
+import { Entity, Column, PrimaryColumn, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
 
-import { ChildEntity } from './ChildEntity';
+import { _Entity } from './Entity';
 
 @Entity()
 export class ParentEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column({unique: true, default: 0})
-    entityId: number;
+    @Column({ default: 0, unique: true})
+    parentId: number;
 
-    @Column({type: "varchar"})
-    entityName: string;
+    @Column({type: "varchar", default: "parent"})
+    parentName: string;
 
-    @OneToMany(type => ChildEntity, child_entity => child_entity.parent, {
-      cascadeUpdate: true
+    @ManyToOne(type => _Entity, _entity => _entity.parent, {
+      cascadeInsert: true
     })
-    children: ChildEntity[];
+    entity: _Entity;
 }
