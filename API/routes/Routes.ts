@@ -7,6 +7,7 @@ import { Limits } from '../entities/Limits';
 import { _Entity } from '../entities/Entity';
 import { Relationship } from  '../entities/Relationship';
 import { ParentEntity } from '../entities/ParentEntity';
+import { ChildEntity } from '../entities/ChildEntity';
 
 // Connection
 import { ConnectionDB } from '../db-connection/Connection';
@@ -43,6 +44,21 @@ export class Routes {
         status: 200,
         data: rawData
       });
+    }
+
+
+    async getChildEntity(req: Request, res: Response, next: NextFunction) {
+        const parentRepo = getRepository(ParentEntity);
+
+          const parent = await parentRepo
+          .createQueryBuilder("parent_entity")
+          .leftJoinAndSelect("parent_entity.children", "child_entity")
+          .getMany();
+
+          res.json({
+            status: 200,
+            data: parent
+          })
     }
 
     async getParentEntity(req: Request, res: Response, next: NextFunction) {

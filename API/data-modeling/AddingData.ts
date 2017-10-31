@@ -59,15 +59,7 @@ export class AddingData {
         let entity = new _Entity();
         let currentEntityID = data["Parent Entity Id"];
 
-        let findById = await manager.find({ entityId :  21077631 });
-        let parent = findById[0] || undefined;
 
-        try {
-          if (parent.entityId) {
-            console.log('Found Id');
-          }
-        }
-        catch (error) {
           entity.entityId = data["Parent Entity Id"];
           entity.entityName = data["Parent Entity Name"];
           entity.entityId = data["Entity Id"];
@@ -76,11 +68,8 @@ export class AddingData {
           manager
           .save(entity)
           .then(entity => console.log('Entity Table Saved!'))
-          .catch((error) => {
-            console.log(error);
-          });
-        }
-      })
+          .catch((error) => { console.log(error) });
+        });
     });
   }
 
@@ -114,40 +103,51 @@ export class AddingData {
     let file = "/home/bootcamp/projects/Investect-BC/investec-app/API/csv/entities.csv";
     const converter = new Converter();
 
+    //let currentParentEntity = "";
+
     converter.fromFile(file, (err, rawData) => {
+      let _entityRepository = getRepository(_Entity);
+      let parentRepository = getRepository(ParentEntity);
+      let childRepository = getRepository(ChildEntity);
+
+      let currentParent : ParentEntity;
+
       rawData.forEach(async (data) => {
-        let _entityRelationship = getRepository(_Entity);
-        let parentRepository = getRepository(ParentEntity);
+        currentParent = data;
 
-        let entityId = await _entityRelationship.find({ entityId:  Number(data["Parent Entity Id"])})
-        let result = entityId[0].entityId === Number(data["Parent Entity Id"]) ? true : false;
+        let currentParentEntityId = data["Parent Entity Id"];
+        let currentRowEntity = await _entityRepository.findOne({ entityId: currentParentEntityId });
 
-        if (result !== false) {
-          try {
-            let parent = new ParentEntity();
+        if (currentParent[0].entityName !== currentRowEntity.entityName) {
 
-            parent.parentId = data["Parent Entity Id"];
-            parent.parentName = data["Parent Entity Name"];
+          //create a new parent
+          let newParent = new ParentEntity()
 
+          newParent.Relationship_Type = data["Parent Entity Name"];
+          newParent.entity = currentRowEntity;
 
-          await parentRepository
-            .save(parent)
-            .then(parent => console.log("Parent has been saved"))
-            .catch(error => console.log("Duplicate Error Caught"));
-
-            let _entity = new _Entity();
-
-            _entity.parent = [ parent ];
-
-            await _entityRelationship
-            .save(_entity)
-            .then(_entity => console.log("_Entity has been saved"))
-            .catch(error => console.log("Cannot save. Error", error));
-          }
-          catch(e) {
-            console.log('duplicate error caught')
-          }
+          // save the parent
+          currentParent = await parentRepository.save(newParent);
         }
+
+
+        let ParentEntityId = await _entityRepository.findOne({ entityId:  data["Parent Entity Id"]})
+
+        if (ParentEntityId) {
+            // create the child
+            let childEntity = new ChildEntity()
+
+            // set the values
+            childEntity.entityId = data["Entity Id"];
+            childEntity.entityName = data["Entity Name"];
+
+            currentParent.children = [childEntity];
+
+            await parentRepository.save(currentParent);
+
+            // save the child
+            await childRepository.save(childEntity)
+          }
 
       });
     })

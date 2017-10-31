@@ -39,6 +39,7 @@ server.app.get("/api/limits", AppRoutes.getLimits);
 server.app.get("/api/entity", AppRoutes.getEntity);
 server.app.get("/api/relationship", AppRoutes.getRelationship);
 server.app.get("/api/parent_entity", AppRoutes.getParentEntity);
+server.app.get("/api/child_entity", AppRoutes.getChildEntity);
 
 server.app.get("/RelationshipModeling", TableModeling.PopulateParentEntity);
 
@@ -48,8 +49,8 @@ server.app.get("/importCSV", async (req: Request, res: Response, next: NextFunct
   //   let connection = server.connectDatabase;
     // addingData.LimitsConverter();
     // addingData.RelationshipsEntityConverter();
-    // addingData.EntitiesConverter();
-    addingData.ParentEntityConverter();
+    // await addingData.EntitiesConverter();
+    await addingData.ParentEntityConverter();
 
   //  addingData.ChildEntityConverter(connection);
 
