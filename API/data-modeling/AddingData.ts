@@ -7,7 +7,9 @@ import { ChildEntity } from '../entities/ChildEntity';
 import { getRepository, Connection } from 'typeorm';
 import { FileParser } from '../csv-converter/FileParser';
 import { Converter } from 'csvtojson';
-import { ConnectionDB } from '../db-connection/Connection'
+import { ConnectionDB } from '../db-connection/Connection';
+
+
 export class AddingData {
   LimitsConverter = () => {
     let file = "/home/bootcamp/projects/Investect-BC/investec-app/API/csv/limits.csv";
@@ -52,58 +54,35 @@ export class AddingData {
       const manager = getRepository(_Entity);
       let _EntityRepo: _Entity = new _Entity();
 
-      let parentMap = [];
-      let childMap = {};
-
       rawData.forEach(async (data) => {
         let entity = new _Entity();
-        let currentEntityID = data["Parent Entity Id"];
-
 
           entity.entityId = data["Parent Entity Id"];
           entity.entityName = data["Parent Entity Name"];
-          entity.entityId = data["Entity Id"];
-          entity.entityName = data["Entity Name"]
 
-          manager
+        manager
           .save(entity)
-          .then(entity => console.log('Entity Table Saved!'))
+          .then(entity => console.log('Parent Entities Saved!'))
           .catch((error) => { console.log(error) });
         });
-    });
-  }
 
-  RelationshipsEntityConverter = () => {
-    let file = "/home/bootcamp/projects/Investect-BC/investec-app/API/csv/entities.csv";
-    const converter = new Converter();
+        rawData.forEach(async (data) => {
+          let entity = new _Entity();
 
-    converter.fromFile(file, (err, rawData) => {
-      const manager = getRepository(Relationship);
+            entity.entityId = data["Entity Id"];
+            entity.entityName = data["Entity Name"];
 
-      let RelationshipRepo: Relationship = new Relationship();
-
-      manager.query("DELETE from relationship");
-
-      const relationshipMap = {};
-
-      rawData.forEach(data => {
-        RelationshipRepo = data;
-
-        RelationshipRepo.Relationship_Type = data["Relationship Type"];
-
-        manager.save(RelationshipRepo)
-          .catch((error) => {
-            console.log("duplicate catched");
+          manager
+            .save(entity)
+            .then(entity => console.log('Child Entities Saved!'))
+            .catch((error) => { console.log(error) });
           });
-      });
     });
   }
 
   ParentEntityConverter = () => {
     let file = "/home/bootcamp/projects/Investect-BC/investec-app/API/csv/entities.csv";
     const converter = new Converter();
-
-    //let currentParentEntity = "";
 
     converter.fromFile(file, (err, rawData) => {
       let _entityRepository = getRepository(_Entity);
@@ -112,36 +91,45 @@ export class AddingData {
 
       let currentParent : ParentEntity;
 
+      parentRepository.query('DELETE FROM parent_entity');
+
       rawData.forEach(async (data) => {
         currentParent = data;
 
         let currentParentEntityId = data["Parent Entity Id"];
         let currentRowEntity = await _entityRepository.findOne({ entityId: currentParentEntityId });
 
-        if (currentParent[0].entityName !== currentRowEntity.entityName) {
 
-          //create a new parent
-          let newParent = new ParentEntity()
 
-          newParent.Relationship_Type = data["Parent Entity Name"];
-          newParent.entity = currentRowEntity;
+        try {
+          if (currentParent["Parent Entity Name"] !== currentRowEntity.entityName) {
+            //create a new parent
+            let newParent = new ParentEntity()
 
-          // save the parent
-          currentParent = await parentRepository.save(newParent);
+            newParent.parentId = data["Parent Entity Id"];
+            newParent.Relationship_Type = data["Relationship Type"];
+            newParent.entity = currentRowEntity;
+
+            // save the parent
+            currentParent = await parentRepository.save(newParent);
+            console.log('Saved Parent Successfully.../')
+          }
+        } catch(e) {
+          console.log("Could not find parent... moving on .../")
         }
 
+        //get child
+        let currentRowChildEntity = await _entityRepository.findOne({ entityId: data["Entity Id"] });
 
-        let ParentEntityId = await _entityRepository.findOne({ entityId:  data["Parent Entity Id"]})
-
-        if (ParentEntityId) {
+        if (currentParent["Entity Name"] !== currentRowChildEntity.entityName) {
             // create the child
             let childEntity = new ChildEntity()
 
             // set the values
-            childEntity.entityId = data["Entity Id"];
-            childEntity.entityName = data["Entity Name"];
+            childEntity.childId = data["Entity Id"];
+            childEntity.entity = currentRowChildEntity;
+            childEntity.parent = currentParent;
 
-            currentParent.children = [childEntity];
 
             await parentRepository.save(currentParent);
 
@@ -152,53 +140,4 @@ export class AddingData {
       });
     })
   }
-
-
-  ChildEntityConverter = (connection) => {
-    let file = "/home/bootcamp/projects/Investect-BC/investec-app/API/csv/entities.csv";
-
-    const converter = new Converter();
-    const childRepo = getRepository(ChildEntity);
-    const parentRepo = getRepository(ParentEntity);
-    const parentMap = {};
-    const childMap = {};
-  //
-  //   converter.fromFile(file, async (err, rawData) => {
-  //
-  //
-  //     let child = new ChildEntity();
-  //
-  //     child.entityId = rawData[0]["Entity Id"];
-  //     child.entityName = rawData[0]["Entity Name"];
-  //
-  //   await childRepo
-  //     .save(child)
-  //     .then(child => console.log("Child Has Been Saved"))
-  //     .catch(error => console.log("Cannot save. Error: ", error));
-  //
-  //     let child2 = new ChildEntity();
-  //
-  //     child2.entityId = rawData[1]["Entity Id"];
-  //     child2.entityName = rawData[1]["Entity Name"];
-  //
-  //   await childRepo
-  //       .save(child2)
-  //       .then(child => console.log("Child Has Been Saved"))
-  //       .catch(error => console.log("Cannot save. Error: ", error));
-  //
-  //
-  //     let parent = new ParentEntity();
-  //
-  //     parent.entityId = rawData[0]["Parent Entity Id"];
-  //     parent.entityName = rawData[0]["Parent Entity Name"];
-  //     parent.children = [child, child2];
-  //
-  //     parentRepo
-  //       .save(parent)
-  //       .then(parent => console.log("Parent Has Been Saved"))
-  //       .catch(error => console.log("Cannot save. Error: ", error));
-  //
-  //   });
-  }
-
 }

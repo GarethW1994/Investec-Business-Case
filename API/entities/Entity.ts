@@ -1,7 +1,7 @@
 import 'reflect-metadata';
 import { Entity, Column, PrimaryColumn, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 import { ParentEntity } from './ParentEntity';
-
+import { ChildEntity } from './ChildEntity';
 @Entity()
 export class _Entity {
     @PrimaryGeneratedColumn()
@@ -18,4 +18,10 @@ export class _Entity {
       cascadeUpdate: true
     })
     parent: ParentEntity[];
+
+    @OneToMany(type => ChildEntity, child_entity => child_entity.entity, {
+      cascadeInsert: true,
+      cascadeUpdate: true
+    })
+    child: ChildEntity[];
 }

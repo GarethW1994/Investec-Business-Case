@@ -25,13 +25,19 @@ export class Routes {
     }
 
     async getEntity(req: Request, res: Response, next: NextFunction) {
-      const manager = getRepository(_Entity);
+      const entityRepo = getRepository(_Entity);
 
-      const rawData = await manager.query("SELECT * FROM _entity");
+      const entity = await entityRepo
+      .createQueryBuilder("_entity")
+      .leftJoinAndSelect("_entity.parent", "parent_entity")
+      .leftJoinAndSelect("_entity.child", "child_entity")
+      .getMany();
+
+      // entity["child"].findOne({id: 2});
 
       res.json({
         status: 200,
-        data: rawData
+        data: entity
       });
     }
 
@@ -48,16 +54,16 @@ export class Routes {
 
 
     async getChildEntity(req: Request, res: Response, next: NextFunction) {
-        const parentRepo = getRepository(ParentEntity);
+        const childRepo = getRepository(ChildEntity);
 
-          const parent = await parentRepo
-          .createQueryBuilder("parent_entity")
-          .leftJoinAndSelect("parent_entity.children", "child_entity")
+          const child = await childRepo
+          .createQueryBuilder("child_entity")
+          .leftJoinAndSelect("child_entity.parent", "parent_entity")
           .getMany();
 
           res.json({
             status: 200,
-            data: parent
+            data: child
           })
     }
 
@@ -66,7 +72,7 @@ export class Routes {
 
       const parent = await parentRepo
       .createQueryBuilder("parent_entity")
-      .leftJoinAndSelect("parent_entity.entity", "_entity")
+      .leftJoinAndSelect("parent_entity.children", "child_entity")
       .getMany();
 
       res.json({

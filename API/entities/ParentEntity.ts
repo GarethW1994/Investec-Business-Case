@@ -9,7 +9,10 @@ export class ParentEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column({type: "varchar", unique: true})
+    @Column({unique: true})
+    parentId: number;
+
+    @Column({type: "varchar" })
     Relationship_Type: string;
 
     @ManyToOne(type => _Entity, _entity => _entity.parent, {
