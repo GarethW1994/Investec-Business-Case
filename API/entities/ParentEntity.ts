@@ -12,9 +12,6 @@ export class ParentEntity {
     @Column({unique: true})
     parentId: number;
 
-    @Column({type: "varchar" })
-    Relationship_Type: string;
-
     @ManyToOne(type => _Entity, _entity => _entity.parent, {
       cascadeInsert: true
     })
@@ -25,5 +22,4 @@ export class ParentEntity {
       cascadeUpdate: true
     })
     children: ChildEntity[];
-
 }

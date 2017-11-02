@@ -9,43 +9,7 @@ import { FileParser } from '../csv-converter/FileParser';
 import { Converter } from 'csvtojson';
 import { ConnectionDB } from '../db-connection/Connection';
 
-
 export class AddingData {
-  LimitsConverter = () => {
-    let file = "/home/bootcamp/projects/Investect-BC/investec-app/API/csv/limits.csv";
-    const converter = new Converter();
-
-    converter.fromFile(file, (err, rawData) => {
-      const manager = getRepository(Limits);
-      let LimitRepo: Limits = new Limits();
-
-      manager.query("DELETE from limits");
-
-      rawData.forEach((data) => {
-        LimitRepo = data;
-
-        LimitRepo.Entity_Id = data["Entity Id"];
-        LimitRepo.RiskTaker_Group_Name = data["Risk Taker Group Name"];
-        LimitRepo.Risk_Taker_Name = data["Risk Taker Name"];
-        LimitRepo.Facility_Id = data["Facility Id"];
-        LimitRepo.Facility_Type = data["Facility Type"];
-        LimitRepo.Limit_Id = data["Limit Id"];
-        LimitRepo.Limit_Type = data["Limit Type"];
-        LimitRepo.Product = data["Product"];
-        LimitRepo.Risk_Type = data["Risk Type"];
-        LimitRepo.Currency = data["Currency"];
-        LimitRepo.Exposure_Amount = data["Exposure Amount"];
-        LimitRepo.Total_Current_Limit = data["Total Current Limit"];
-        LimitRepo.Total_Approved_Limit = data["Total Approved Limit"];
-
-        manager.save(LimitRepo)
-          .catch((error) => {
-            console.log(error);
-          });
-      });
-    });
-  }
-
   EntitiesConverter = () => {
     let file = "/home/bootcamp/projects/Investect-BC/investec-app/API/csv/entities.csv";
     const converter = new Converter();
@@ -99,45 +63,115 @@ export class AddingData {
         let currentParentEntityId = data["Parent Entity Id"];
         let currentRowEntity = await _entityRepository.findOne({ entityId: currentParentEntityId });
 
-
-
         try {
           if (currentParent["Parent Entity Name"] !== currentRowEntity.entityName) {
             //create a new parent
             let newParent = new ParentEntity()
 
             newParent.parentId = data["Parent Entity Id"];
-            newParent.Relationship_Type = data["Relationship Type"];
             newParent.entity = currentRowEntity;
 
             // save the parent
             currentParent = await parentRepository.save(newParent);
-            console.log('Saved Parent Successfully.../')
+            console.log('Saved Parent Successfully.../');
           }
         } catch(e) {
-          console.log("Could not find parent... moving on .../")
+          console.log("Could not find parent... moving on .../");
         }
-
-        //get child
-        let currentRowChildEntity = await _entityRepository.findOne({ entityId: data["Entity Id"] });
-
-        if (currentParent["Entity Name"] !== currentRowChildEntity.entityName) {
-            // create the child
-            let childEntity = new ChildEntity()
-
-            // set the values
-            childEntity.childId = data["Entity Id"];
-            childEntity.entity = currentRowChildEntity;
-            childEntity.parent = currentParent;
-
-
-            await parentRepository.save(currentParent);
-
-            // save the child
-            await childRepository.save(childEntity)
-          }
-
       });
+    });
+  }
+
+  ChildEntityConverter = () => {
+    let file = "/home/bootcamp/projects/Investect-BC/investec-app/API/csv/entities.csv";
+
+    const converter = new Converter();
+
+    converter.fromFile(file, (err, rawData) => {
+      let _entityRepository = getRepository(_Entity);
+      let parentRepository = getRepository(ParentEntity);
+      let childRepository = getRepository(ChildEntity);
+
+      let currentChild : ChildEntity;
+
+      childRepository.query('DELETE FROM child_entity');
+
+      rawData.forEach(async (data) => {
+        currentChild = data;
+
+        let currentChildEntityId = data["Entity Id"];
+        let currentRowEntity = await _entityRepository.findOne({ entityId: currentChildEntityId });
+        let currentParent = await parentRepository.findOne({ parentId: data["Parent Entity Id"] });
+
+        try {
+          if (currentChild["Entity Name"] !== currentRowEntity.entityName) {
+            // create new child_entity
+            let newChild = new ChildEntity();
+
+            newChild.childId = data["Entity Id"];
+            newChild.entity = currentRowEntity;
+            newChild.parent = currentParent;
+
+            currentChild = await childRepository.save(newChild);
+          }
+        } catch(e) {
+            console.log("Could not find child ... moving on ... /")
+        }
+      });
+    });
+  }
+
+  RelationshipsEntityConverter = () => {
+    let file: string = "/home/bootcamp/projects/Investect-BC/investec-app/API/csv/entities.csv";
+
+    const converter = new Converter();
+
+    converter.fromFile(file, (err, rawData) => {
+      let _entityRepository = getRepository(_Entity);
+      let relationshipRepo = getRepository(Relationship);
+
+      let currentRelationship: Relationship;
+
+      relationshipRepo.query("DELETE FROM relationship");
+
+      rawData.forEach((data) =>{
+
+      })
     })
   }
+
+    //   LimitsConverter = () => {
+    //     let file = "/home/bootcamp/projects/Investect-BC/investec-app/API/csv/limits.csv";
+  //     const converter = new Converter();
+  //
+  //     converter.fromFile(file, (err, rawData) => {
+  //       const manager = getRepository(Limits);
+  //       let LimitRepo: Limits = new Limits();
+  //
+  //       manager.query("DELETE from limits");
+  //
+  //       rawData.forEach((data) => {
+  //         LimitRepo = data;
+  //
+  //         LimitRepo.Entity_Id = data["Entity Id"];
+  //         LimitRepo.RiskTaker_Group_Name = data["Risk Taker Group Name"];
+  //         LimitRepo.Risk_Taker_Name = data["Risk Taker Name"];
+  //         LimitRepo.Facility_Id = data["Facility Id"];
+  //         LimitRepo.Facility_Type = data["Facility Type"];
+  //         LimitRepo.Limit_Id = data["Limit Id"];
+  //         LimitRepo.Limit_Type = data["Limit Type"];
+  //         LimitRepo.Product = data["Product"];
+  //         LimitRepo.Risk_Type = data["Risk Type"];
+  //         LimitRepo.Currency = data["Currency"];
+  //         LimitRepo.Exposure_Amount = data["Exposure Amount"];
+  //         LimitRepo.Total_Current_Limit = data["Total Current Limit"];
+  //         LimitRepo.Total_Approved_Limit = data["Total Approved Limit"];
+  //
+  //         manager.save(LimitRepo)
+  //           .catch((error) => {
+  //             console.log(error);
+  //           });
+  //       });
+  //     });
+  //   }
 }
