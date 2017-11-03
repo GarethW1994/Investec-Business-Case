@@ -15,9 +15,6 @@ import { Converter } from 'csvtojson';
 var AppRoutes = new Routes();
 var TableModeling = new RelationshipTableModeling();
 
-
-import { Profile } from './entities/Profile';
-import { User } from './entities/User';
 // server instance
 var server = new Server(3000);
 
