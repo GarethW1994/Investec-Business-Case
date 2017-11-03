@@ -45,10 +45,10 @@ server.app.get("/importCSV", async (req: Request, res: Response, next: NextFunct
 
   //   let connection = server.connectDatabase;
     // addingData.LimitsConverter();
-    // addingData.RelationshipsEntityConverter();
     // await addingData.EntitiesConverter();
-  await addingData.ParentEntityConverter();
-  await addingData.ChildEntityConverter();
+  // await addingData.ParentEntityConverter();
+  // await addingData.ChildEntityConverter();
+  await addingData.RelationshipsEntityConverter();
 
 
      res.send("Success");

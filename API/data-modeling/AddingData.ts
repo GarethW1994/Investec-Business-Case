@@ -126,16 +126,37 @@ export class AddingData {
 
     const converter = new Converter();
 
-    converter.fromFile(file, (err, rawData) => {
+    converter.fromFile(file,(err, rawData) => {
       let _entityRepository = getRepository(_Entity);
       let relationshipRepo = getRepository(Relationship);
+      let childRepository = getRepository(ChildEntity);
 
       let currentRelationship: Relationship;
 
       relationshipRepo.query("DELETE FROM relationship");
 
-      rawData.forEach((data) =>{
+      rawData.forEach( async (data) =>{
+        currentRelationship = data;
 
+        let currentEntityID = data["Entity Id"] || data["Parent Entity Id"];
+
+        let currentRowEntity = await _entityRepository.findOne({ entityId: currentEntityID });
+
+        let currentEntity = await _entityRepository.findOne({ entityId: currentEntityID });
+
+        try {
+          if (currentEntity["Entity Name"] !== currentRowEntity.entityName) {
+            let newRelationship = new Relationship();
+
+            newRelationship.Relationship_Type = data["Relationship Type"];
+            newRelationship.entity = currentEntity;
+
+            //save Relationship
+            relationshipRepo.save(newRelationship);
+          }
+        } catch (e) {
+          console.log("Could not find entity moving on ... /");
+        }
       })
     })
   }
