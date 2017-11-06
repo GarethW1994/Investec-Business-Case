@@ -2,10 +2,10 @@ import 'reflect-metadata';
 import { createConnection, Connection, getRepository } from "typeorm";
 
 // Repositories
-import { Relationship } from '../entities/Relationship';
+import { EntityRelationship } from '../entities/EntityRelationship';
 import { _Entity } from '../entities/Entity';
-import { ParentEntity } from '../entities/ParentEntity';
-import { ChildEntity } from '../entities/ChildEntity';
+import { EntityLimit } from  '../entities/EntityLimit';
+import { Facility } from '../entities/Facility';
 
 export class ConnectionDB {
     private conn;
@@ -19,7 +19,7 @@ export class ConnectionDB {
             password: "$G_Code1!",
             database: "investec_data",
             synchronize: true,
-            entities: [ Relationship, _Entity, ParentEntity, ChildEntity ]
+            entities: [ EntityRelationship, _Entity, EntityLimit, Facility ]
         })
       }
 }

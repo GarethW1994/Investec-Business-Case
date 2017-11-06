@@ -1,9 +1,9 @@
 // Repositories
-import { Limits } from '../entities/Limits';
-import { Relationship } from '../entities/Relationship';
+import { EntityLimit } from '../entities/EntityLimit';
+import { EntityRelationship } from '../entities/EntityRelationship';
 import { _Entity } from '../entities/Entity';
-import { ParentEntity } from '../entities/ParentEntity';
-import { ChildEntity } from '../entities/ChildEntity';
+import { Facility } from '../entities/Facility';
+
 import { getRepository, Connection } from 'typeorm';
 import { FileParser } from '../csv-converter/FileParser';
 import { Converter } from 'csvtojson';
@@ -44,155 +44,136 @@ export class AddingData {
     });
   }
 
-  ParentEntityConverter = () => {
+  EntityRelationshipConverter = () => {
     let file = "/home/bootcamp/projects/Investect-BC/investec-app/API/csv/entities.csv";
     const converter = new Converter();
 
     converter.fromFile(file, (err, rawData) => {
-      let _entityRepository = getRepository(_Entity);
-      let parentRepository = getRepository(ParentEntity);
-      let childRepository = getRepository(ChildEntity);
+      const entityRelationshipRepo = getRepository(EntityRelationship);
+      const _entityRepository = getRepository(_Entity);
 
-      let currentParent : ParentEntity;
+      let currentEntity: EntityRelationship;
 
-      parentRepository.query('DELETE FROM parent_entity');
-
-      rawData.forEach(async (data) => {
-        currentParent = data;
-
-        let currentParentEntityId = data["Parent Entity Id"];
-        let currentRowEntity = await _entityRepository.findOne({ entityId: currentParentEntityId });
-
-        try {
-          if (currentParent["Parent Entity Name"] !== currentRowEntity.entityName) {
-            //create a new parent
-            let newParent = new ParentEntity()
-
-            newParent.parentId = data["Parent Entity Id"];
-            newParent.entity = currentRowEntity;
-
-            // save the parent
-            currentParent = await parentRepository.save(newParent);
-            console.log('Saved Parent Successfully.../');
-          }
-        } catch(e) {
-          console.log("Could not find parent... moving on .../");
-        }
-      });
-    });
-  }
-
-  ChildEntityConverter = () => {
-    let file = "/home/bootcamp/projects/Investect-BC/investec-app/API/csv/entities.csv";
-
-    const converter = new Converter();
-
-    converter.fromFile(file, (err, rawData) => {
-      let _entityRepository = getRepository(_Entity);
-      let parentRepository = getRepository(ParentEntity);
-      let childRepository = getRepository(ChildEntity);
-
-      let currentChild : ChildEntity;
-
-      childRepository.query('DELETE FROM child_entity');
+      entityRelationshipRepo.query("DELETE FROM entity_relationship");
 
       rawData.forEach(async (data) => {
-        currentChild = data;
+        currentEntity = data;
 
-        let currentChildEntityId = data["Entity Id"];
-        let currentRowEntity = await _entityRepository.findOne({ entityId: currentChildEntityId });
-        let currentParent = await parentRepository.findOne({ parentId: data["Parent Entity Id"] });
+        let currentParentEntityID = data["Parent Entity Id"];
+
+        let currentRowEntity = await _entityRepository.findOne({ entityId: currentParentEntityID });
+        let currentRowRelationship = await entityRelationshipRepo.findOne({ relationshipType: data["Relationship Type"] })
+
+        let currentChildEntityID = data["Entity Id"];
+        let currentChildEntityRow = await _entityRepository.findOne({ entityId: currentChildEntityID });
 
         try {
-          if (currentChild["Entity Name"] !== currentRowEntity.entityName) {
-            // create new child_entity
-            let newChild = new ChildEntity();
+          if (currentEntity["Parent Entity Name"] !== currentRowEntity.entityName) {
 
-            newChild.childId = data["Entity Id"];
-            newChild.entity = currentRowEntity;
-            newChild.parent = currentParent;
+                      // create a new parent
+                      let newRelationship = new EntityRelationship()
+                      newRelationship.relationshipType = data["Relationship Type"];
+                      newRelationship.parent = currentRowEntity;
+                      newRelationship.child = currentChildEntityRow;
 
-            currentChild = await childRepository.save(newChild);
+                      // save the parent
+                      currentEntity = await entityRelationshipRepo.save(newRelationship);
+                      console.log('Saved Relationship Successfully.../');
           }
-        } catch(e) {
-            console.log("Could not find child ... moving on ... /")
+        }
+         catch(e) {
+          console.log('Could not find parent... moving on.../');
         }
       });
-    });
-  }
-
-  RelationshipsEntityConverter = () => {
-    let file: string = "/home/bootcamp/projects/Investect-BC/investec-app/API/csv/entities.csv";
-
-    const converter = new Converter();
-
-    converter.fromFile(file,(err, rawData) => {
-      let _entityRepository = getRepository(_Entity);
-      let relationshipRepo = getRepository(Relationship);
-      let childRepository = getRepository(ChildEntity);
-
-      let currentRelationship: Relationship;
-
-      relationshipRepo.query("DELETE FROM relationship");
-
-      rawData.forEach( async (data) =>{
-        currentRelationship = data;
-
-        let currentEntityID = data["Entity Id"] || data["Parent Entity Id"];
-
-        let currentRowEntity = await _entityRepository.findOne({ entityId: currentEntityID });
-
-        let currentEntity = await _entityRepository.findOne({ entityId: currentEntityID });
-
-        try {
-          if (currentEntity["Entity Name"] !== currentRowEntity.entityName) {
-            let newRelationship = new Relationship();
-
-            newRelationship.Relationship_Type = data["Relationship Type"];
-            newRelationship.entity = currentEntity;
-
-            //save Relationship
-            relationshipRepo.save(newRelationship);
-          }
-        } catch (e) {
-          console.log("Could not find entity moving on ... /");
-        }
-      })
     })
   }
 
-    //   LimitsConverter = () => {
-    //     let file = "/home/bootcamp/projects/Investect-BC/investec-app/API/csv/limits.csv";
-  //     const converter = new Converter();
-  //
-  //     converter.fromFile(file, (err, rawData) => {
-  //       const manager = getRepository(Limits);
-  //       let LimitRepo: Limits = new Limits();
-  //
-  //       manager.query("DELETE from limits");
-  //
-  //       rawData.forEach((data) => {
-  //         LimitRepo = data;
-  //
-  //         LimitRepo.Entity_Id = data["Entity Id"];
-  //         LimitRepo.RiskTaker_Group_Name = data["Risk Taker Group Name"];
-  //         LimitRepo.Risk_Taker_Name = data["Risk Taker Name"];
-  //         LimitRepo.Facility_Id = data["Facility Id"];
-  //         LimitRepo.Facility_Type = data["Facility Type"];
-  //         LimitRepo.Limit_Id = data["Limit Id"];
-  //         LimitRepo.Limit_Type = data["Limit Type"];
-  //         LimitRepo.Product = data["Product"];
-  //         LimitRepo.Risk_Type = data["Risk Type"];
-  //         LimitRepo.Currency = data["Currency"];
-  //         LimitRepo.Exposure_Amount = data["Exposure Amount"];
-  //         LimitRepo.Total_Current_Limit = data["Total Current Limit"];
-  //         LimitRepo.Total_Approved_Limit = data["Total Approved Limit"];
-  //
-  //         manager.save(LimitRepo)
-  //           .catch((error) => {
-  //             console.log(error);
-  //           });
-  //       });
-  //     });
-  //   }
+ FacilityConverter = () => {
+   let file = "/home/bootcamp/projects/Investect-BC/investec-app/API/csv/limits.csv";
+
+   const converter = new Converter();
+
+   converter.fromFile(file, (err, rawData) => {
+      let facilityRepo = getRepository(Facility);
+
+      let currentFacility: Facility;
+
+      facilityRepo.query("DELETE FROM facility");
+
+      rawData.forEach(async (data) => {
+          currentFacility = data;
+
+          let currentFacilityId = data["Facility Id"];
+
+          let currentFacilityRow = await facilityRepo.findOne({ facilityID: currentFacilityId });
+
+          try {
+            if (!currentFacilityRow) {
+              // let check = currentFacilityId === currentFacilityRow.facilityID ? true : false || undefined;
+              // console.log(check);
+              let newFacility = new Facility();
+              //
+              newFacility.facilityID = data["Facility Id"];
+              newFacility.facilityType = data["Facility Type"];
+
+              //save new facility
+              currentFacility = await facilityRepo.save(newFacility);
+              console.log("saved facility successfully");
+            }
+          } catch(e) {
+            console.log('Facility Already Exists In Database');
+          }
+      });
+   });
+ }
+
+   LimitsConverter = () => {
+        let file = "/home/bootcamp/projects/Investect-BC/investec-app/API/csv/limits.csv";
+        let file2 = "/home/bootcamp/projects/Investect-BC/investec-app/API/csv/entities.csv";
+
+      const converter = new Converter();
+
+      converter.fromFile(file, (err, rawData) => {
+        const limitRepo = getRepository(EntityLimit);
+        const facilityRepo = getRepository(Facility);
+        const _entityRepository = getRepository(_Entity);
+
+        let currentEntity: EntityLimit;
+
+        limitRepo.query("DELETE FROM entity_limit");
+
+        rawData.forEach(async (data) => {
+          currentEntity = data;
+
+          let currentEntityID = data["Entity Id"];
+
+          let currentRowEntity = await _entityRepository.findOne({ entityId: currentEntityID });
+          let currentFacilityLimit = await facilityRepo.findOne({ facilityID: data["Facility Id"] });
+
+          try {
+            if (currentRowEntity) {
+                        // create a new limit
+                        let newEntityLimit = new EntityLimit()
+                        newEntityLimit.RiskTaker_Group_Name = data["Risk Taker Group Name"];
+                        newEntityLimit.Risk_Taker_Name = data["Risk Taker Name"];
+                        newEntityLimit.Product = data["Product"];
+                        newEntityLimit.Risk_Type = data["Risk Type"];
+                        newEntityLimit.Currency = data["Currency"];
+                        newEntityLimit.Exposure_Amount = data["Exposure Amount"];
+                        newEntityLimit.Total_Current_Limit = data["Total Current Limit"];
+                        newEntityLimit.Total_Approved_Limit = data["Total Approved Limit"];
+                        newEntityLimit.entity = currentRowEntity;
+                        newEntityLimit.facilityLimit = currentFacilityLimit;
+
+                        // save the parent
+                        currentEntity = await limitRepo.save(newEntityLimit);
+                        console.log('Saved Entity Limit Successfully.../');
+            }
+          }
+           catch(e) {
+            console.log(e);
+          }
+        });
+      });
+    }
 }

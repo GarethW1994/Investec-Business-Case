@@ -1,8 +1,8 @@
 import 'reflect-metadata';
 import { Entity, Column, PrimaryColumn, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
-import { ParentEntity } from './ParentEntity';
-import { ChildEntity } from './ChildEntity';
-import { Relationship } from './Relationship';
+
+import { EntityRelationship } from './EntityRelationship';
+import { EntityLimit } from './EntityLimit';
 
 @Entity()
 export class _Entity {
@@ -15,21 +15,21 @@ export class _Entity {
     @Column({type: "varchar"})
     entityName: string;
 
-    @OneToMany(type => ParentEntity, parent_entity => parent_entity.entity, {
+    @OneToMany(type => EntityRelationship, entity_relationship => entity_relationship.child, {
       cascadeInsert: true,
       cascadeUpdate: true
     })
-    parent: ParentEntity[];
+    ChildRelationship: EntityRelationship[];
 
-    @OneToMany(type => ChildEntity, child_entity => child_entity.entity, {
+    @OneToMany(type => EntityRelationship, entity_relationship => entity_relationship.parent, {
       cascadeInsert: true,
       cascadeUpdate: true
     })
-    child: ChildEntity[];
+    ParentRelationship: EntityRelationship[];
 
-    @OneToMany(type => Relationship, relationship => relationship.entity, {
+    @OneToMany(type => EntityLimit, entity_limit => entity_limit.entity, {
       cascadeInsert: true,
       cascadeUpdate: true
     })
-    relationship: Relationship[];
+    limit: EntityLimit[];
 }

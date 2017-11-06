@@ -3,7 +3,6 @@ import { Routes } from "./routes/Routes";
 
 // DataModeling
 import { AddingData } from "./data-modeling/AddingData";
-import { RelationshipTableModeling } from "./data-modeling/RelationshipTablesModeling";
 
 // typeorm
 import { Entity, getManager, getRepository, Connection } from 'typeorm';
@@ -13,7 +12,6 @@ import { Converter } from 'csvtojson';
 
 // classes instance
 var AppRoutes = new Routes();
-var TableModeling = new RelationshipTableModeling();
 
 // server instance
 var server = new Server(3000);
@@ -38,17 +36,16 @@ server.app.get("/api/relationship", AppRoutes.getRelationship);
 server.app.get("/api/parent_entity", AppRoutes.getParentEntity);
 server.app.get("/api/child_entity", AppRoutes.getChildEntity);
 
-server.app.get("/RelationshipModeling", TableModeling.PopulateParentEntity);
-
 server.app.get("/importCSV", async (req: Request, res: Response, next: NextFunction) => {
   let addingData = new AddingData();
 
   //   let connection = server.connectDatabase;
     // addingData.LimitsConverter();
     // await addingData.EntitiesConverter();
-  // await addingData.ParentEntityConverter();
+    // await addingData.EntityRelationshipConverter();
+    await addingData.LimitsConverter();
+    // await addingData.FacilityConverter();
   // await addingData.ChildEntityConverter();
-  await addingData.RelationshipsEntityConverter();
 
 
      res.send("Success");
