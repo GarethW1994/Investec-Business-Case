@@ -6,6 +6,7 @@ import { EntityRelationship } from '../entities/EntityRelationship';
 import { _Entity } from '../entities/Entity';
 import { EntityLimit } from  '../entities/EntityLimit';
 import { Facility } from '../entities/Facility';
+import { Limits } from '../entities/Limits';
 
 export class ConnectionDB {
     private conn;
@@ -19,7 +20,7 @@ export class ConnectionDB {
             password: "$G_Code1!",
             database: "investec_data",
             synchronize: true,
-            entities: [ EntityRelationship, _Entity, EntityLimit, Facility ]
+            entities: [ EntityRelationship, _Entity, EntityLimit, Facility, Limits ]
         })
       }
 }

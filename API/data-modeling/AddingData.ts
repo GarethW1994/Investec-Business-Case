@@ -3,6 +3,7 @@ import { EntityLimit } from '../entities/EntityLimit';
 import { EntityRelationship } from '../entities/EntityRelationship';
 import { _Entity } from '../entities/Entity';
 import { Facility } from '../entities/Facility';
+import { Limits } from '../entities/Limits';
 
 import { getRepository, Connection } from 'typeorm';
 import { FileParser } from '../csv-converter/FileParser';
@@ -127,6 +128,43 @@ export class AddingData {
    });
  }
 
+ LimitConverter = () => {
+   let file = "/home/bootcamp/projects/Investect-BC/investec-app/API/csv/limits.csv";
+
+   const converter = new Converter();
+
+   converter.fromFile(file, (err, rawData) => {
+     const limitRepo = getRepository(Limits);
+
+     let currentLimit: Limits;
+
+     limitRepo.query("DELETE FROM limits");
+
+     rawData.forEach(async (data) => {
+            currentLimit = data;
+
+            let currentLimitId = data["Limit Id"];
+
+            let currentLimitRow = await limitRepo.findOne({ limitID: currentLimitId });
+
+            try {
+              if (!currentLimitRow) {
+                let newLimit = new Limits();
+
+                newLimit.limitID = data["Limit Id"];
+                newLimit.limitType = data["Limit Type"];
+
+                //save new limit
+                currentLimit = await limitRepo.save(newLimit);
+                console.log("saved limit successfully");
+              }
+            } catch(e) {
+              console.log('Limit Already Exists In Database');
+            }
+     });
+   });
+ }
+
    LimitsConverter = () => {
         let file = "/home/bootcamp/projects/Investect-BC/investec-app/API/csv/limits.csv";
         let file2 = "/home/bootcamp/projects/Investect-BC/investec-app/API/csv/entities.csv";
@@ -134,13 +172,14 @@ export class AddingData {
       const converter = new Converter();
 
       converter.fromFile(file, (err, rawData) => {
-        const limitRepo = getRepository(EntityLimit);
+        const entityLimitRepo = getRepository(EntityLimit);
         const facilityRepo = getRepository(Facility);
         const _entityRepository = getRepository(_Entity);
+        const limitRepo  = getRepository(Limits);
 
         let currentEntity: EntityLimit;
 
-        limitRepo.query("DELETE FROM entity_limit");
+        entityLimitRepo.query("DELETE FROM entity_limit");
 
         rawData.forEach(async (data) => {
           currentEntity = data;
@@ -149,7 +188,8 @@ export class AddingData {
 
           let currentRowEntity = await _entityRepository.findOne({ entityId: currentEntityID });
           let currentFacilityLimit = await facilityRepo.findOne({ facilityID: data["Facility Id"] });
-
+          let currentLimit = await limitRepo.findOne({ limitID: data["Limit Id"] });
+          
           try {
             if (currentRowEntity) {
                         // create a new limit
@@ -164,9 +204,9 @@ export class AddingData {
                         newEntityLimit.Total_Approved_Limit = data["Total Approved Limit"];
                         newEntityLimit.entity = currentRowEntity;
                         newEntityLimit.facilityLimit = currentFacilityLimit;
-
+                        newEntityLimit.entityLimit = currentLimit;
                         // save the parent
-                        currentEntity = await limitRepo.save(newEntityLimit);
+                        currentEntity = await entityLimitRepo.save(newEntityLimit);
                         console.log('Saved Entity Limit Successfully.../');
             }
           }

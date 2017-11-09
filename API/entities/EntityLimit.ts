@@ -3,6 +3,7 @@ import {Entity, PrimaryColumn, PrimaryGeneratedColumn, Column, ManyToOne } from 
 
 import { _Entity } from  './Entity';
 import { Facility } from './Facility';
+import { Limits } from './Limits';
 
 @Entity()
 export class EntityLimit {
@@ -14,12 +15,6 @@ export class EntityLimit {
     //
     @Column({ type: "varchar", length: 100, default: "" })
     Risk_Taker_Name: string
-
-    // @Column({ type: "int", length: 50, default: 0 })
-    // Limit_Id: number
-    //
-    // @Column({ type: "varchar", default: "" })
-    // Limit_Type: string
 
     @Column({ type: "varchar", length: 100, default: "" })
     Product: string
@@ -47,10 +42,17 @@ export class EntityLimit {
     })
     entity: _Entity;
 
-    @ManyToOne(type => Facility, facility => facility.entityLimit, {
+    @ManyToOne(type => Facility, facility => facility.entityFacility, {
       cascadeInsert: true,
       cascadeUpdate: true,
       cascadeRemove: true
     })
     facilityLimit: Facility;
+
+    @ManyToOne(type => Limits, limits => limits.entityLimit, {
+      cascadeInsert: true,
+      cascadeUpdate: true,
+      cascadeRemove: true
+    })
+    entityLimit: Limits;
 }

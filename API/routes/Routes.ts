@@ -3,6 +3,8 @@ import { getManager, getRepository } from 'typeorm';
 import { Request, Response, NextFunction } from 'express';
 
 // Repositories
+import { _Entity } from '../entities/Entity';
+import { EntityRelationship } from '../entities/EntityRelationship';
 
 // Connection
 import { ConnectionDB } from '../db-connection/Connection';
@@ -20,31 +22,31 @@ export class Routes {
     }
 
     async getEntity(req: Request, res: Response, next: NextFunction) {
-      // const entityRepo = getRepository(_Entity);
-      //
-      // const entity = await entityRepo
-      // .createQueryBuilder("_entity")
-      // .leftJoinAndSelect("_entity.parent", "parent_entity")
-      // .leftJoinAndSelect("_entity.child", "child_entity")
-      // .getMany();
-      //
-      // // entity["child"].findOne({id: 2});
-      //
-      // res.json({
-      //   status: 200,
-      //   data: entity
-      // });
+
+      // const rawData = await entityRelationshipRepo.query("SELECT * FROM entity_relationship");
+
     }
 
     async getRelationship(req: Request, res: Response, next: NextFunction) {
-      // const manager = getRepository(Relationship);
-      //
-      // const rawData = await manager.query("SELECT * FROM relationship");
-      //
-      // res.json({
-      //   status: 200,
-      //   data: rawData
-      // });
+      const entityRelationshipRepo = getRepository(EntityRelationship);
+
+      const entity  = await entityRelationshipRepo
+      .find({
+        join: {
+          alias: "entity_relationship",
+          leftJoinAndSelect: {
+            parent: "entity_relationship.parent",
+            child: "entity_relationship.child"
+          }
+        }
+      }).then(loadedEntity => {
+        console.log("loadedEntity: ", loadedEntity);
+        res.json({
+          status: 200,
+          data: loadedEntity
+        })
+      });
+
     }
 
 
@@ -69,7 +71,7 @@ export class Routes {
       // .createQueryBuilder("parent_entity")
       // .leftJoinAndSelect("parent_entity.children", "child_entity")
       // .getMany();
-      // 
+      //
       // res.json({
       //   status: 200,
       //   data: parent

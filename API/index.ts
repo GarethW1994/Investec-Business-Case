@@ -32,21 +32,18 @@ server.app.use(function (req, res, next) {
 //routes
 server.app.get("/api/limits", AppRoutes.getLimits);
 server.app.get("/api/entity", AppRoutes.getEntity);
-server.app.get("/api/relationship", AppRoutes.getRelationship);
+server.app.get("/api/entity_relationship", AppRoutes.getRelationship);
 server.app.get("/api/parent_entity", AppRoutes.getParentEntity);
 server.app.get("/api/child_entity", AppRoutes.getChildEntity);
 
 server.app.get("/importCSV", async (req: Request, res: Response, next: NextFunction) => {
   let addingData = new AddingData();
 
-  //   let connection = server.connectDatabase;
-    // addingData.LimitsConverter();
     // await addingData.EntitiesConverter();
     // await addingData.EntityRelationshipConverter();
-    await addingData.LimitsConverter();
     // await addingData.FacilityConverter();
-  // await addingData.ChildEntityConverter();
-
+    // await addingData.LimitConverter();
+    await addingData.LimitsConverter();
 
      res.send("Success");
 });

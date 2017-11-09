@@ -5,7 +5,7 @@ import {EntityLimit} from './EntityLimit';
 
 @Entity()
 export class Facility {
-  @PrimaryColumn({ type: "int", length: 8, default: 0 })
+  @PrimaryColumn({ type: "int", default: 0 })
   facilityID: number;
 
   @Column({ type: "char", length: 1, default: ""})
@@ -15,5 +15,5 @@ export class Facility {
     cascadeInsert: true,
     cascadeUpdate: true
   })
-  entityLimit: EntityLimit[];
+  entityFacility: EntityLimit[];
 }
