@@ -6,7 +6,6 @@ import { Facility } from '../entities/Facility';
 import { Limits } from '../entities/Limits';
 
 import { getRepository, Connection } from 'typeorm';
-import { FileParser } from '../csv-converter/FileParser';
 import { Converter } from 'csvtojson';
 import { ConnectionDB } from '../db-connection/Connection';
 
@@ -189,7 +188,7 @@ export class AddingData {
           let currentRowEntity = await _entityRepository.findOne({ entityId: currentEntityID });
           let currentFacilityLimit = await facilityRepo.findOne({ facilityID: data["Facility Id"] });
           let currentLimit = await limitRepo.findOne({ limitID: data["Limit Id"] });
-          
+
           try {
             if (currentRowEntity) {
                         // create a new limit

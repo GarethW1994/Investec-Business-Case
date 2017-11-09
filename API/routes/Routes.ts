@@ -5,32 +5,58 @@ import { Request, Response, NextFunction } from 'express';
 // Repositories
 import { _Entity } from '../entities/Entity';
 import { EntityRelationship } from '../entities/EntityRelationship';
+import { EntityLimit } from '../entities/EntityLimit';
 
 // Connection
 import { ConnectionDB } from '../db-connection/Connection';
 
 export class Routes {
     async getLimits(req: Request, res: Response, next: NextFunction) {
-        // const manager = getRepository(Limits);
-        //
-        // const rawData = await manager.query("SELECT * FROM limits");
-        //
-        // res.json({
-        //     status: 200,
-        //     data: rawData
-        // });
+        const EntityLimitRepo = getRepository(EntityLimit);
+
+        const entityLimit = await EntityLimitRepo
+        .find({
+          join: {
+            alias: "entity_limit",
+            leftJoinAndSelect: {
+              entity: "entity_limit.entity"
+            }
+          }
+        }).then(limitLoaded => {
+          console.log("Limit Loaded", limitLoaded);
+
+          res.json({
+            status: 200,
+            data: limitLoaded
+          })
+        })
     }
 
     async getEntity(req: Request, res: Response, next: NextFunction) {
+      const entityRepo = getRepository(_Entity);
 
-      // const rawData = await entityRelationshipRepo.query("SELECT * FROM entity_relationship");
-
+      const entity = await entityRepo
+      .find({
+        join: {
+          alias: "_entity",
+          leftJoinAndSelect : {
+            parent: "_entity.ParentRelationship",
+            child: "_entity.ChildRelationship",
+            limit: "_entity.limit"
+          }
+        }
+      }).then(loadedEntity => {
+        res.json({
+          status: 200,
+          data: loadedEntity
+        })
+      })
     }
 
     async getRelationship(req: Request, res: Response, next: NextFunction) {
       const entityRelationshipRepo = getRepository(EntityRelationship);
 
-      const entity  = await entityRelationshipRepo
+      const entityRelationship  = await entityRelationshipRepo
       .find({
         join: {
           alias: "entity_relationship",
@@ -39,14 +65,12 @@ export class Routes {
             child: "entity_relationship.child"
           }
         }
-      }).then(loadedEntity => {
-        console.log("loadedEntity: ", loadedEntity);
+      }).then(loadedEntityRelationship => {
         res.json({
           status: 200,
-          data: loadedEntity
+          data: loadedEntityRelationship
         })
       });
-
     }
 
 

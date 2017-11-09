@@ -7,8 +7,6 @@ import { AddingData } from "./data-modeling/AddingData";
 // typeorm
 import { Entity, getManager, getRepository, Connection } from 'typeorm';
 import { Request, Response, NextFunction } from 'express';
-import { FileParser } from './csv-converter/FileParser';
-import { Converter } from 'csvtojson';
 
 // classes instance
 var AppRoutes = new Routes();
@@ -30,7 +28,7 @@ server.app.use(function (req, res, next) {
 });
 
 //routes
-server.app.get("/api/limits", AppRoutes.getLimits);
+server.app.get("/api/entity_limit", AppRoutes.getLimits);
 server.app.get("/api/entity", AppRoutes.getEntity);
 server.app.get("/api/entity_relationship", AppRoutes.getRelationship);
 server.app.get("/api/parent_entity", AppRoutes.getParentEntity);
