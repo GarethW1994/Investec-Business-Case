@@ -28,11 +28,11 @@ server.app.use(function (req, res, next) {
 });
 
 //routes
-server.app.get("/api/entity_limit", AppRoutes.getLimits);
+server.app.get("/api/entity_limit/:id", AppRoutes.getLimits);
 server.app.get("/api/entity", AppRoutes.getEntity);
 server.app.get("/api/entity_relationship", AppRoutes.getRelationship);
 server.app.get("/api/parent_entity", AppRoutes.getParentEntity);
-server.app.get("/api/child_entity", AppRoutes.getChildEntity);
+server.app.get("/api/child_entity/:id", AppRoutes.getChildEntity);
 
 server.app.get("/importCSV", async (req: Request, res: Response, next: NextFunction) => {
   let addingData = new AddingData();

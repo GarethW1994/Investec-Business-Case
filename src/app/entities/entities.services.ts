@@ -7,33 +7,49 @@ import 'rxjs/Rx';
 
 @Injectable()
 export class EntitiesService {
-    private BASE_URL: string = "http://localhost:3000/api";
+    private BASE_URL: string = "http://localhost:3000/api/";
     entities: string[];
     parent: string[];
+    child: string[];
+    limit: string[];
 
     constructor(private http: HttpClient ) { this.ngOnInit() }
 
     ngOnInit(): void {
-        this.http.get(this.BASE_URL + "/entity")
+        this.http.get(this.BASE_URL + "entity")
         .subscribe(data => {
             this.entities = data['data'];
         });
+    }
 
-        this.http.get(this.BASE_URL + "/parent_entity")
-        .subscribe(data => {
-            this.parent = data['data'];
-        });
+    async findLimit(entityId) {
+      await this.http.get(this.BASE_URL + "entity_limit/" + entityId)
+      .subscribe(async (data) => {
+        this.limit = data["data"];
+      });
+    }
+
+    async findChildEntity(parentId) {
+      let status = await this.http.get(this.BASE_URL + "child_entity/" + parentId)
+        .subscribe(async (data) => {
+          this.child = data['data'];
+        })
+
+        return status;
     }
 
     getEntities() {
-        return this.entities;
+      return this.entities;
     }
 
-    getParentEntities() {
-        return this.parent;
+    getChildEntity() {
+      return this.child;
     }
 
-
+    getLimit() {
+      return this.limit;
+    }
+    
     private handleError(error: Response) {
         return error.statusText;
     }

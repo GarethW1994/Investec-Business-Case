@@ -8,7 +8,7 @@ import { EntityComponent } from './entities/entity.component';
 })
 export class AppComponent {
   classname: string = "";
-  component: string = "Entities";
+  component: string = "Admin Dashboard";
 
   onBranches(event) {
     this.component = event.target.innerText;

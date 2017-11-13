@@ -6,9 +6,9 @@
 }
 
 #loading-text {
-    width: 100px;
-    height: 100px;
-    position: fixed;
+    width: 25px;
+    height: 25px;
+    position: static;
     left: 0;
     right: 0;
     top: 0;
@@ -17,12 +17,12 @@
 }
 
 #loading {
-    width: 50px;
-    height: 50px;
+    width: 40px;
+    height: 40px;
     border: 5px solid #ccc;
     border-top-color: #e73407;
     border-radius: 100%;
-    position: fixed;
+    position: static;
     left: 0;
     right: 0;
     top: 0;
@@ -39,4 +39,38 @@
     0% {transform: rotate(0deg)};
     50% {transform: rotate(180deg)}
     100% {transform: rotate(360deg)}
+}
+
+#childList li {
+  display: block;
+}
+
+#childItem {
+  margin: 10px;
+}
+
+#alertContainer {
+  width: 40%;
+  height: 20%;
+}
+
+#heading {
+  margin: 30px;
+}
+
+.system {
+  float: left;
+  padding-right: 10px;
+}
+
+.info {
+  color: #4f64ff;
+}
+
+.success {
+  color: #1ece18;
+}
+
+.danger {
+  color: #dd350b;
 }

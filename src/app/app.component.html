@@ -12,8 +12,8 @@
 
           <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav">
-              <li class="active"><a href="#">Admin <span class="sr-only">(current)</span></a></li>
-              <li><a href="#" (click)="onBranches()">Something goes here</a></li>
+              <li class="active"><a href="#">Admin Dashboard <span class="sr-only">(current)</span></a></li>
+              <li><a href="#"></a></li>
             </ul>
             <form class="navbar-form navbar-left" role="search">
               <div class="form-group">
@@ -27,16 +27,10 @@
           </div>
         </div>
       </nav>
-<hr>
 
-<ul class="nav nav-pills">
-    <li (click)="onBranches($event)" ><a href="#">Relationships</a></li>
-    <li (click)="onBranches($event)" class="active"><a href="#Branches">Entities</a></li>
-    <li (click)="onBranches($event)" ><a href="#">Limits</a></li>
-</ul>
-
-<hr>
-
-<h3>{{ component }}</h3>
+<h3 id="heading">
+  {{ component }}
+  <small class="text-muted"> ( Investec Business Case )</small>
+</h3>
 
 <app-entity></app-entity>
