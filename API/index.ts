@@ -37,10 +37,10 @@ server.app.get("/api/child_entity/:id", AppRoutes.getChildEntity);
 server.app.get("/importCSV", async (req: Request, res: Response, next: NextFunction) => {
   let addingData = new AddingData();
 
-    // await addingData.EntitiesConverter();
-    // await addingData.EntityRelationshipConverter();
-    // await addingData.FacilityConverter();
-    // await addingData.LimitConverter();
+    await addingData.EntitiesConverter();
+    await addingData.EntityRelationshipConverter();
+    await addingData.FacilityConverter();
+    await addingData.LimitConverter();
     await addingData.LimitsConverter();
 
      res.send("Success");

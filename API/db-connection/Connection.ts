@@ -16,8 +16,8 @@ export class ConnectionDB {
             type: "mysql",
             host: "localhost",
             port: 3306,
-            username: "root",
-            password: "$G_Code1!",
+            username: "investec_user",
+            password: "password",
             database: "investec_data",
             synchronize: true,
             entities: [ EntityRelationship, _Entity, EntityLimit, Facility, Limits ]
